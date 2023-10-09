@@ -40,10 +40,10 @@ namespace desktop_vcalender_wpf
                 _dataList.Add(new Data { Date = date, Memo = _save.GetMemo(date), TabIndex = i });
                 if (start_num + i == 0)
                     c_listview.SelectedIndex = i;
-                else if (start_num + i == 15)
-                    c_listview.ScrollIntoView(_dataList[i]);
             }
             c_listview.ItemsSource = _dataList;
+            c_listview.ScrollIntoView(_dataList[^1]);
+            c_listview.ScrollIntoView(_dataList[60]);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

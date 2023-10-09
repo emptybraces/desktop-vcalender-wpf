@@ -12,7 +12,7 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ListView x:Name="c_listview" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="c_listview_MouseMove" Focusable="False" Background="#FF333333" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
+        <ListView x:Name="c_listview" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="c_listview_MouseMove" Focusable="False" Background="#FF333333" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingStackPanel.VirtualizationMode="Recycling" >
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
