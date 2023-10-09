@@ -23,11 +23,14 @@ namespace desktop_vcalender_wpf
             InitializeComponent();
             _save = SaveData.Load();
 
-            var bounds = Rect.Parse(Properties.Settings.Default.Bounds);
-            Left = bounds.Left;
-            Top = bounds.Top;
-            Width = bounds.Width;
-            Height = bounds.Height;
+            var bounds = Properties.Settings.Default.Bounds.Split(",");
+            if (bounds.Length == 4)
+            {
+                if (int.TryParse(bounds[0], out int left)) Left = left;
+                if (int.TryParse(bounds[1], out int top)) Top = top;
+                if (int.TryParse(bounds[2], out int width)) Width = width;
+                if (int.TryParse(bounds[3], out int height)) Height = height;
+            }
 
             const int start_num = -60;
             _startDate = DateTime.Today.AddDays(start_num);
