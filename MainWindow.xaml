@@ -12,7 +12,7 @@
         </Style>
     </Window.Resources>
     <Grid>
-        <ListView x:Name="c_listview" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="c_listview_MouseMove" Focusable="False" Background="#FF333333" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingStackPanel.VirtualizationMode="Recycling" >
+        <ListView x:Name="c_listview" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="c_listview_MouseMove" Focusable="False" Background="#FF333333" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingStackPanel.VirtualizationMode="Recycling" VirtualizingPanel.IsVirtualizing="False">
             <ListView.ItemContainerStyle>
                 <Style TargetType="ListViewItem">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -22,7 +22,7 @@
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                    <DockPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
                         <TextBlock Text="{Binding DateString}" ToolTip="{Binding Memo}" Margin="0,0,10,0" Foreground="#FFF3F3F3"/>
                         <TextBox Text="{Binding Memo}" KeyDown="TextBox_KeyDown" LostKeyboardFocus="TextBox_LostKeyboardFocus" Background="#FF333333" Foreground="#FFF7F7F7" BorderThickness="0,0,0,1" /> 
                     </DockPanel>

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Xml.Serialization;
 namespace desktop_vcalender_wpf
 {
@@ -82,7 +82,14 @@ namespace desktop_vcalender_wpf
             {
                 var memo = ((TextBox)sender).Text;
                 _save.SetMemo(_dataList[idx].Date, memo);
-                Debug.WriteLine(_dataList[idx].Date + memo);
+                Decorator border = VisualTreeHelper.GetChild(c_listview, 0) as Decorator;
+                if (border != null)
+                {
+                    // Get scrollviewer
+                    ScrollViewer scrollViewer = border.Child as ScrollViewer;
+                    if (scrollViewer != null)
+                        scrollViewer.ScrollToHorizontalOffset(0);
+                }
             }
 
         }
