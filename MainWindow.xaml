@@ -1,0 +1,33 @@
+﻿<Window x:Class="desktop_vcalender_wpf.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:desktop_vcalender_wpf"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" KeyDown="Window_KeyDown" Closing="Window_Closing" WindowStyle="None">
+    <Window.Resources>
+        <Style x:Key="myHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <ListView x:Name="c_listview" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Disabled" MouseMove="c_listview_MouseMove" Focusable="False" Background="#FF333333">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="ListViewItem">
+                    <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+                    <Setter Property="Focusable" Value="False" />
+                    <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
+                </Style>
+            </ListView.ItemContainerStyle>
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <DockPanel ScrollViewer.VerticalScrollBarVisibility="Disabled">
+                        <TextBlock Text="{Binding DateString}" ToolTip="{Binding Memo}" Margin="0,0,10,0" Foreground="#FFF3F3F3"/>
+                        <TextBox Text="{Binding Memo}" KeyDown="TextBox_KeyDown" LostKeyboardFocus="TextBox_LostKeyboardFocus" Background="#FF333333" Foreground="#FFF7F7F7" BorderThickness="0,0,0,1" /> 
+                    </DockPanel>
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+    </Grid>
+</Window>
