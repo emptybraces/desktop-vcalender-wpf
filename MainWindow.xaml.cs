@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Reactive.Bindings;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -9,6 +11,8 @@ using System.Windows.Media;
 using System.Xml.Serialization;
 namespace desktop_vcalender_wpf
 {
+    public enum State { None, Plan, Must, Pending, Done }
+
     /// <summary>
     /// Interaction logic for MainWindow.xaml
     /// </summary>
@@ -17,6 +21,7 @@ namespace desktop_vcalender_wpf
         List<Data> _dataList = new List<Data>();
         DateTime _startDate;
         SaveData _save;
+
 
         public MainWindow()
         {
@@ -33,17 +38,32 @@ namespace desktop_vcalender_wpf
             }
 
             const int start_num = -60;
+            int focus_idx = -1;
             _startDate = DateTime.Today.AddDays(start_num);
             for (int i = 0; i < 120; i++)
             {
                 var date = _startDate.AddDays(i);
-                _dataList.Add(new Data { Date = date, Memo = _save.GetMemo(date), TabIndex = i });
-                if (start_num + i == 0)
-                    c_listview.SelectedIndex = i;
+                var savedata = _save.Get(date);
+                var data = new Data();
+                data.Date = date;
+                data.Memo = savedata?.Memo ?? "";
+                data.State.Value = savedata?.State ?? State.None;
+                data.TabIndex = 1;
+                _dataList.Add(data);
+                if ((data.State.Value == State.Plan || data.State.Value == State.Must) && date < DateTime.Today)
+                    data.State.Value = State.Pending;
+                if (focus_idx == -1)
+                {
+                    if (data.State.Value == State.Pending || i + start_num == 0)
+                        focus_idx = i;
+                }
             }
+            if (focus_idx == -1)
+                focus_idx = -start_num;
             c_listview.ItemsSource = _dataList;
             c_listview.ScrollIntoView(_dataList[^1]);
-            c_listview.ScrollIntoView(_dataList[60]);
+            c_listview.ScrollIntoView(_dataList[focus_idx]);
+            Debug.WriteLine(focus_idx);
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -120,14 +140,28 @@ namespace desktop_vcalender_wpf
             idx = -1;
             return false;
         }
+
+        private void MenuItem_Click(object sender, RoutedEventArgs e)
+        {
+            if (GetSelectedIndex(sender, out var idx))
+            {
+                MenuItem menuItem = (MenuItem)e.Source;
+                ContextMenu menu = (ContextMenu)menuItem.Parent;
+                //var item = (DockPanel)menu.PlacementTarget;
+
+                _dataList[idx].State.Value = (State)Enum.Parse(typeof(State), menuItem.Header.ToString());
+                //_save.SetState(_dataList[idx].Date, _dataList[idx].State);
+            }
+        }
     }
 
     public class Data
     {
         public DateTime Date { get; set; }
         public string DateString => Date.ToString("MM/dd(ddd)");
-        public string Memo { get; set; }
+        public string Memo { get; set; } = "";
         public int TabIndex { get; set; }
+        public ReactiveProperty<State> State { get; } = new();
     }
 
     public class SaveData
@@ -135,35 +169,45 @@ namespace desktop_vcalender_wpf
         static readonly string path = "save.txt";
         public List<Item> Items = new List<Item>();
         string KeyFromDate(DateTime date) => date.ToString("yyyyMMdd");
-        public void SetMemo(DateTime date, string value)
+        public void SetMemo(DateTime date, string memo)
         {
             var key = KeyFromDate(date);
-            var index = Items.FindIndex(e => e.Key == key);
+            var index = Items.FindIndex(e => e.Date == key);
             if (-1 == index)
-                Items.Add(new Item { Key = key, Value = value });
+                Items.Add(new Item { Date = key, Memo = memo });
             else
-                Items[index].Value = value;
+                Items[index].Memo = memo;
         }
-        public string GetMemo(DateTime date)
+        public void SetState(DateTime date, State state)
         {
             var key = KeyFromDate(date);
-            var index = Items.FindIndex(e => e.Key == key);
-            return -1 == index ? "" : Items[index].Value;
+            var index = Items.FindIndex(e => e.Date == key);
+            if (-1 == index)
+                Items.Add(new Item { Date = key, State = state });
+            else
+                Items[index].State = state;
+        }
+        public Item Get(DateTime date)
+        {
+            var key = KeyFromDate(date);
+            var index = Items.FindIndex(e => e.Date == key);
+            return -1 == index ? null : Items[index];
         }
         public class Item
         {
-            public string Key;
-            public string Value;
+            public string Date;
+            public string Memo;
+            public State State;
         }
-        public static string Save(SaveData control)
+        public static string Save(SaveData save)
         {
-            control.Items = control.Items.Where(e => !string.IsNullOrWhiteSpace(e.Value)).ToList();
+            save.Items = save.Items.Where(e => !string.IsNullOrWhiteSpace(e.Memo) || e.State != State.None).ToList();
             var writer = new StringWriter(); // 出力先のWriterを定義
             var serializer = new XmlSerializer(typeof(SaveData));
-            serializer.Serialize(writer, control);
+            serializer.Serialize(writer, save);
             var xml = writer.ToString();
             File.WriteAllText(path, xml);
-            Console.WriteLine(xml);
+            Debug.WriteLine(xml);
             return xml;
         }
 

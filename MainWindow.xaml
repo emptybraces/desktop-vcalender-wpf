@@ -10,21 +10,42 @@
         <Style x:Key="myHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
             <Setter Property="Visibility" Value="Collapsed" />
         </Style>
+        <ContextMenu x:Key="cm_listitem" x:Shared="False">
+            <MenuItem Header="None" Click="MenuItem_Click" />
+            <MenuItem Header="Plan" Click="MenuItem_Click" />
+            <MenuItem Header="Must" Click="MenuItem_Click" />
+            <MenuItem Header="Pending" Click="MenuItem_Click" />
+            <MenuItem Header="Done" Click="MenuItem_Click" />
+        </ContextMenu>
     </Window.Resources>
     <Grid>
         <ListView x:Name="c_listview" d:ItemsSource="{d:SampleData ItemCount=5}" SelectionMode="Single" ScrollViewer.VerticalScrollBarVisibility="Hidden" MouseMove="c_listview_MouseMove" Focusable="False" Background="#FF333333" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ScrollViewer.CanContentScroll="False" VirtualizingPanel.ScrollUnit="Pixel" VirtualizingStackPanel.VirtualizationMode="Recycling" VirtualizingPanel.IsVirtualizing="False">
             <ListView.ItemContainerStyle>
-                <Style TargetType="ListViewItem">
+                <Style TargetType="{x:Type ListViewItem}">
                     <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
                     <Setter Property="Focusable" Value="False" />
                     <Setter Property="KeyboardNavigation.TabNavigation" Value="Continue" />
+                    <Style.Triggers>
+                        <DataTrigger Binding="{Binding State.Value}" Value="Plan">
+                            <Setter Property="Background" Value="CadetBlue" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding State.Value}" Value="Must">
+                            <Setter Property="Background" Value="OrangeRed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding State.Value}" Value="Pending">
+                            <Setter Property="Background" Value="DarkRed" />
+                        </DataTrigger>
+                        <DataTrigger Binding="{Binding State.Value}" Value="Done">
+                            <Setter Property="Background" Value="DarkGreen" />
+                        </DataTrigger>
+                    </Style.Triggers>
                 </Style>
             </ListView.ItemContainerStyle>
             <ListView.ItemTemplate>
                 <DataTemplate>
-                    <DockPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Hidden">
-                        <TextBlock Text="{Binding DateString}" ToolTip="{Binding Memo}" Margin="0,0,10,0" Foreground="#FFF3F3F3"/>
-                        <TextBox Text="{Binding Memo}" KeyDown="TextBox_KeyDown" LostKeyboardFocus="TextBox_LostKeyboardFocus" Background="#FF333333" Foreground="#FFF7F7F7" BorderThickness="0,0,0,1" /> 
+                    <DockPanel ScrollViewer.VerticalScrollBarVisibility="Disabled" ScrollViewer.HorizontalScrollBarVisibility="Hidden" ContextMenu="{StaticResource cm_listitem}">
+                        <TextBlock Text="{Binding DateString}" ToolTip="{Binding Memo}" Margin="0,0,10,0" Foreground="#FFF3F3F3" />
+                        <TextBox Text="{Binding Memo}" KeyDown="TextBox_KeyDown" LostKeyboardFocus="TextBox_LostKeyboardFocus" Background="#FF333333" Foreground="#FFF7F7F7" BorderThickness="0,0,0,1" ContextMenu="{x:Null}"/> 
                     </DockPanel>
                 </DataTemplate>
             </ListView.ItemTemplate>
